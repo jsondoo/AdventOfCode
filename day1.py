@@ -8,13 +8,10 @@ print(sum(mass_to_fuel))
 
 
 def massive(mass):
-	fuel = mass // 3 -2
+	fuel = mass // 3 - 2
 	return fuel + massive(fuel) if fuel >= 0 else 0
 
 mass_to_fuel2 = map(lambda yeet : massive(yeet), masses)
 
 print("Part 2 answer:")
 print(sum(mass_to_fuel2))
-
-
-
