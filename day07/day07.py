@@ -5,16 +5,12 @@ with open('input.txt', 'r') as file:
 
 text = list(map(int, text))
 
-taken = [False] * 5
+def intcode(amp):
+    # retrieve amp state
+    i = idx[amp]
+    data = memory[amp] 
+    inp = inputs[amp]
 
-# TODO trace mode
-
-def intcode(inp1, inp2, amp):
-    data = text[:] # may have to change so each amp has own memory
-    print(data)
-    print(inp1, inp2)
-   
-    i = 0
     while i < len(data):
         inst = str(data[i]) 
         # pad with zeros to make 5 characters
@@ -32,21 +28,18 @@ def intcode(inp1, inp2, amp):
             p1, p2, p3 = data[i+1], data[i+2], data[i+3]
             data[p3] = (p1 if C == 1 else data[p1]) * (p2 if B == 1 else data[p2])
             i += 4
-            print(data)
         elif DE == 3:
             p1 = data[i+1]
-            if not taken[amp]:
-                data[p1] = inp1
-                taken[amp] = True
-            else:
-                data[p1] = inp2
+            data[p1] = inp.pop(0)
             i += 2
-            print(data)
         elif DE == 4:
-            print(data)
             p1 = data[i+1]
             i += 2
-            return data[p1]
+            outs[amp] = data[p1]
+            inputs[(amp + 1) % 5].append(data[p1])
+            idx[amp] = i
+            memory[amp] = data
+            return
         elif DE == 5:
             C, B = int(inst[-3]), int(inst[-4])
             p1, p2 = data[i+1], data[i+2]
@@ -82,19 +75,39 @@ def intcode(inp1, inp2, amp):
                 data[p3] = 0
             i += 4
         elif DE == 99:
+            halted[amp] = True
             break
 
-best = float('-inf')
+    return
 
-settings = permutations([i for i in range(5)])
+best = float('-inf')
+settings = permutations([5,6,7,8,9])
+# settings = [[0,1,2,4,3]]
+
+# amplifier states
+halted = [False] * 5
+idx = [0] * 5
+outs = [0] * 5
+inputs = []
+memory = [list(text) for i in range(5)]
 
 for setting in settings:
     print(setting)
-    taken = [False] * 5
-    inp = 0
-    for amp, p in enumerate(setting):
-        inp = intcode(p, inp, amp)
-    best = max(best, inp)
+    halted = [False] * 5
+    idx = [0] * 5
+    outs = [0] * 5
+    inputs = [[setting[i]] for i in range(5)]
+    memory = [list(text) for i in range(5)]
+    inputs[0].append(0)
+
+    while not any(halted):
+        for amp in range(5):
+            intcode(amp)
+            if any(halted):
+                break
+            
+    best = max(best, max(outs))
+        
 
 print(best)
 
