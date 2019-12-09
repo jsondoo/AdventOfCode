@@ -1,6 +1,5 @@
 import textwrap
 import collections
-
 from itertools import permutations
 
 with open('input.txt', 'r') as file:
@@ -19,27 +18,26 @@ for layer in layers:
         mini = c['0']
         ans = c['1'] * c['2']
 
-print('ans ', ans)
-print(layers) # list of strings
+print(f'Part 1: {ans}')
 
-lay = [list(layer) for layer in layers]
-zipped = list(zip(*lay))
 
 # PART 2
+layer = [list(layer) for layer in layers]
+pixel_by_layer = list(zip(*layer)) # * changes the elements in the list into separate arguments
+
 image = ''
-for z in zipped:
-    reee = None
-    for ch in list(z):
+for pixel in pixel_by_layer:
+    color = None
+    for ch in list(pixel):
         if ch != '2':
-            reee = ch
+            color = ch
             break
-    if reee is not None:
-        image += reee
-    else:
-        image += '2'
+    if color is None:
+        color = '2'
+    image += color
 
-image = textwrap.wrap(image, 25)
-print(image)
+image = textwrap.wrap(image, width)
 
-for layer in image:
-    print(layer.replace('0','.'))
+print('Part 2: ')
+for row in image:
+    print(row.replace('0','.'))
