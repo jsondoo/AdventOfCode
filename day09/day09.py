@@ -25,8 +25,8 @@ def intcode(inp):
       memory[p1] = inp
       pc += 2
     elif opcode == 4: # print output
-      p1 = write_val[modes[2]](pc+1) 
-      print(memory[p1])
+      p1 = read_val[modes[2]](pc+1) 
+      print(p1)
       pc += 2
     elif opcode == 5: # jump if true
       p1, p2 = read_val[modes[2]](pc+1), read_val[modes[1]](pc+2)
