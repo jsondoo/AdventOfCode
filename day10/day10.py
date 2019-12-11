@@ -17,7 +17,6 @@ num_cols = len(data[0])
 ans = float('-inf')
 best_a = None
 for a1 in aesteroid:
-  mapp = data.copy()
   can_see = 0
   visited = set()
   ax, ay = a1[0], a1[1]
