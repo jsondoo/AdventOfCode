@@ -18,41 +18,55 @@ for r in reactions:
 
   rules[name] = (amount, produced)
 
-queue = collections.deque()
-queue.append(('FUEL',1))
-
 def has_only_ORE(arr):
   for name, _ in arr:
     if name != 'ORE':
       return False
   return True
 
-surplus = collections.defaultdict(int)
+def fuel_to_minimum_ores(n):
+  global rules
+  surplus = collections.defaultdict(int)
+  queue = collections.deque()
+  queue.append(('FUEL',n))
 
-while not has_only_ORE(queue):
-  name, amount = queue.popleft()  # amount is how much we NEED
-  if name == 'ORE':
-    queue.append((name,amount))
-    continue
+  while not has_only_ORE(queue):
+    name, amount = queue.popleft()  # amount is how much we NEED
+    if name == 'ORE':
+      queue.append((name,amount))
+      continue
 
-  produced, reactants = rules[name]  # produced is amount we get from the reaction
-  if amount % produced == 0:
-    num_reactions = amount // produced # no excess produced
+    produced, reactants = rules[name]  # produced is amount we get from the reaction
+    if amount % produced == 0:
+      num_reactions = amount // produced # no excess produced
+    else:
+      num_reactions = math.ceil(amount / produced)
+      excess = num_reactions * produced - amount
+      surplus[name] += excess
+
+    while surplus[name] >= produced: # use up excess by removing reactions required
+      num_reactions -= 1
+      surplus[name] -= produced
+
+    for reactant_name, reactant_amount in reactants:
+      queue.append((reactant_name, reactant_amount * num_reactions))
+
+  total_ores = 0
+  for _,v in queue:
+    total_ores += v
+  return total_ores
+
+print(fuel_to_minimum_ores(1)) # PART 1 
+
+# binary search for x fuel 
+# such that it requires minimum of 1 trillion ores
+target = 1000000000000
+lo, hi = target // fuel_to_minimum_ores(1), 1000000000000
+while lo < hi:
+  mid = lo + (hi - lo) // 2
+  if fuel_to_minimum_ores(mid) < target:
+    lo = mid + 1
   else:
-    num_reactions = math.ceil(amount / produced)
-    excess = num_reactions * produced - amount
-    surplus[name] += excess
+    hi = mid
 
-  while surplus[name] >= produced: # use up excess by removing reactions required
-    num_reactions -= 1
-    surplus[name] -= produced
-
-  for reactant_name, reactant_amount in reactants:
-    queue.append((reactant_name, reactant_amount * num_reactions))
-
-print(queue)
-
-total_ores = 0
-for _,v in queue:
-  total_ores += v
-print(total_ores)
+print(lo - 1) # PART 2
