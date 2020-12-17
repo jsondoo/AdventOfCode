@@ -8,13 +8,12 @@ grid = {} # triplet to a state (# or .)
 
 num_rows = len(rows)
 num_cols = len(rows[0])
-print(num_cols)
 
 # initialize inactive dimension
-for w in range(-10,10): 
-  for z in range(-10,10):
-    for r in range(-10,num_rows+10):
-      for c in range(-10, num_cols+10):
+for w in range(-7,7): 
+  for z in range(-7,7):
+    for r in range(-7,num_rows+7):
+      for c in range(-7, num_cols+7):
         grid[(r,c,z,w)] = '.'
 
 # initial given input
@@ -34,7 +33,7 @@ def compute_next_grid(grid):
           for dc in (-1,0,1):
             tup = (dr,dc,dw,dz)
             if tup != (0,0,0,0):
-              res = res = tuple(map(lambda i, j: i + j, coordinate, tup)) 
+              res = tuple(map(lambda i, j: i + j, coordinate, tup)) 
               if res in grid and grid[res] == '#': # should be big enoguh to get anything
                 count_active += 1
 
